@@ -8,6 +8,11 @@
   "author": "Kevin Upton <k_upton@live.com>",
   "license": "MIT",
   "private": true,
+  "scripts": {
+    "clean": "rimraf lib",
+    "build": "webpack",
+    "prepublish": "npm run clean && npm run build"
+  },
   "dependencies": {
     "express": "^4.16.4",
     "phantom-crawler-server": "^3.0.0",
@@ -32,7 +37,9 @@
     "ts-node": "^8.1.0",
     "ts-node-dev": "^1.0.0-pre.33",
     "typescript": "^3.4.5",
-    "webpack": "^4.30.0"
+    "webpack": "^4.30.0",
+    "webpack-cli": "^3.3.1",
+    "webpack-node-externals": "^1.7.2"
   },
   "preferGlobal": true,
   "bin": {
