@@ -5,6 +5,7 @@ import { CachedPathConfig } from './cache-path-job';
 
 export interface Config {
   port : number;
+  host : string;
   loopSpeed : number;
   domain : string;
   cachedPaths : CachedPathConfig[];
@@ -16,6 +17,7 @@ export interface Config {
 
 const DEFAULT_CONFIG : Partial<Config> = {
   port: 1002,
+  host: '127.0.0.1',
   debug: false,
   loopSpeed: 20,
   globalCacheDuration: 600,

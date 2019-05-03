@@ -15,7 +15,7 @@ app.get('*', (req : Request, res : Response) => {
 });
 
 export function startServer() {
-  app.listen(config.port, () => {
+  app.listen(config.port, config.host, () => {
     console.log('Listening on port ' + config.port);
   });
 }
