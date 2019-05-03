@@ -24,7 +24,8 @@ const DEFAULT_CONFIG : Partial<Config> = {
 const configJsonPath = path.join(process.cwd(), './config.json');
 
 if (!fs.existsSync(configJsonPath)) {
-  throw new Error('Cannot find `config.json` file.');
+  console.log('[ERROR] Cannot find `config.json` file.');
+  process.exit(0);
 }
 
 const configToLoad           = JSON.parse(fs.readFileSync(configJsonPath, 'utf-8'));
