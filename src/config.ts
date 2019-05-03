@@ -4,6 +4,7 @@ import { updateEnvironment } from 'phantom-crawler-server';
 import { CachedPathConfig } from './cache-path-job';
 
 export interface Config {
+  port : number;
   loopSpeed : number;
   domain : string;
   cachedPaths : CachedPathConfig[];
@@ -14,6 +15,7 @@ export interface Config {
 }
 
 const DEFAULT_CONFIG : Partial<Config> = {
+  port: 1002,
   debug: false,
   loopSpeed: 20,
   globalCacheDuration: 600,
