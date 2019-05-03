@@ -19,7 +19,7 @@ export class CachedPath {
     { path, cacheDuration } : CachedPathConfig,
   ) {
     this.cacheDurationMs = cacheDuration ? cacheDuration * 1000 : config.globalCacheDuration * 1000;
-    this.path            = path;
+    this.path            = path.startsWith('/') ? path : `/${path}`;
 
     if (!this.path) {
       throw new Error('Invalid path provided for cached path');

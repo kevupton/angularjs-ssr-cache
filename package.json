@@ -7,7 +7,6 @@
   "repository": "https://github.com/kevupton/angularjs-ssr-cache",
   "author": "Kevin Upton <k_upton@live.com>",
   "license": "MIT",
-  "private": true,
   "scripts": {
     "clean": "rimraf lib",
     "build": "webpack",

@@ -1,16 +1,13 @@
 import { combineLatest, interval, Observable } from 'rxjs';
 import { of } from 'rxjs/internal/observable/of';
-import { filter } from 'rxjs/internal/operators/filter';
-import { tap } from 'rxjs/internal/operators/tap';
 import { first, flatMap, shareReplay } from 'rxjs/operators';
 import { cacheManager } from './cache-manager';
 import { CachedPath } from './cached-path';
 import { config } from './config';
 
 export class Engine {
-  private readonly interval = interval();
+  private readonly interval = interval(1000 / config.loopSpeed);
   private readonly cachedPaths : CachedPath[];
-  private runningLoop       = false;
   private previousRunTime : number;
 
   constructor () {
@@ -22,8 +19,6 @@ export class Engine {
 
     this.previousRunTime = Date.now();
     const subscription   = this.interval.pipe(
-      filter(() => !this.runningLoop),
-      tap(() => this.runningLoop = true),
       flatMap(() => {
         const now            = Date.now();
         const timeDifference = now - this.previousRunTime;
@@ -34,7 +29,6 @@ export class Engine {
             first(),
           );
       }),
-      tap(() => this.runningLoop = false),
     )
       .subscribe();
 

@@ -1,7 +1,9 @@
+import * as fs from 'fs';
 import path from 'path';
 import { CachedPathConfig } from './cached-path';
 
 export interface Config {
+  loopSpeed : number;
   domain : string;
   cachedPaths : CachedPathConfig[];
   cachedDir : string;
@@ -10,19 +12,20 @@ export interface Config {
 }
 
 const DEFAULT_CONFIG : Partial<Config> = {
+  loopSpeed: 20,
   globalCacheDuration: 600,
   totalBrowsers: 2,
+  cachedDir: path.join(process.cwd(), './.cache'),
 };
 
-export const config : Config = Object.assign(
-  DEFAULT_CONFIG,
-  require(path.join(process.cwd(), './config.json'))
-);
+const configJsonPath = path.join(process.cwd(), './config.json');
 
-if (!config) {
+if (!fs.existsSync(configJsonPath)) {
   throw new Error('Cannot find `config.json` file.');
 }
 
-if (!config.cachedDir) {
-  config.cachedDir = path.join(process.cwd(), './.cache');
-}
+const configToLoad           = JSON.parse(fs.readFileSync(configJsonPath, 'utf-8'));
+export const config : Config = Object.assign(
+  DEFAULT_CONFIG,
+  configToLoad,
+);
