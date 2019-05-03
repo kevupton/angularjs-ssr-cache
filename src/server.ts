@@ -14,8 +14,8 @@ app.get('*', (req : Request, res : Response) => {
   });
 });
 
-export function startServer() {
+export function startServer () {
   app.listen(config.port, config.host, () => {
-    console.log('Listening on port ' + config.port);
+    console.log(`Listening on port ${ config.host }:${ config.port }`);
   });
 }
