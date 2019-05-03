@@ -41,7 +41,7 @@ export class CachePathJob {
           if (config.debug) {
             console.log('saving result');
           }
-          cacheManager.save(this.getUrl(), result);
+          cacheManager.save(this.path, result);
         }),
         mapTo(null),
       );
