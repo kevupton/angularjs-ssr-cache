@@ -1,4 +1,3 @@
-import './routes';
 import { tap } from 'rxjs/internal/operators/tap';
 import { Engine } from './engine';
 import { startServer } from './server';

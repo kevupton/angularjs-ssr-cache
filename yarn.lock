@@ -4096,10 +4096,10 @@ performance-now@^2.1.0:
   resolved "https://registry.yarnpkg.com/performance-now/-/performance-now-2.1.0.tgz#6309f4e0e5fa913ec1c69307ae364b4b377c9e7b"
   integrity sha1-Ywn04OX6kT7BxpMHrjZLSzd8nns=
 
-phantom-crawler-server@^3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/phantom-crawler-server/-/phantom-crawler-server-3.0.0.tgz#34775b7f16d0a227d3875015d77427d5d540557d"
-  integrity sha512-4LHv3tPgHbijT7ibYaH7Yoaq27MIR9SkrLzD2vmx8abAY5b3x2KFlIZT4ltDP8nZtklx00d4qeSroQf2E50dDg==
+phantom-crawler-server@^3.0.1:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/phantom-crawler-server/-/phantom-crawler-server-3.0.1.tgz#ef8c35825645273bc6acfa920bfbcc706110bd00"
+  integrity sha512-fv9vIPAon/TwCb4FuWzXrgozTQxkcH1TDXmWC+akMF+kgWf864Lgh3iCPZBW4sppsaaReWEvyhfBx3P4PoQekg==
   dependencies:
     argparse "1.0.10"
     express "4.16.4"

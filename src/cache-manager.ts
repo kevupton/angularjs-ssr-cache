@@ -10,14 +10,12 @@ export interface CachedFileInfo {
 }
 
 class CacheManager {
-  init() {
-    this.clear();
-    fs.mkdirSync(config.cachedDir);
-  }
-
-  clear () {
-    rimraf(config.cachedDir, () => {
+  init () {
+    if (config.debug) {
       console.log('Cleared existing cache');
+    }
+    rimraf(config.cachedDir, () => {
+      fs.mkdirSync(config.cachedDir);
     });
   }
 

@@ -31,10 +31,18 @@ export class CachePathJob {
       return;
     }
 
-    console.log('adding to queue ' + this.getUrl());
+    if (config.debug) {
+      console.log('adding to queue ' + this.getUrl());
+    }
+
     return queueRenderer.addToQueue(this)
       .pipe(
-        tap(result => cacheManager.save(this.path, result)),
+        tap(result => {
+          if (config.debug) {
+            console.log('saving result');
+          }
+          cacheManager.save(this.getUrl(), result);
+        }),
         mapTo(null),
       );
   }

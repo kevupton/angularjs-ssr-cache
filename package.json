@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "express": "^4.16.4",
-    "phantom-crawler-server": "^3.0.0",
+    "phantom-crawler-server": "^3.0.1",
     "rxjs": "^6.5.1"
   },
   "devDependencies": {

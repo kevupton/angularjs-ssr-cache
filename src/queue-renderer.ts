@@ -87,7 +87,6 @@ export class QueueRenderer {
       return;
     }
 
-    console.log('trying to create job');
     const queue = [...this.queueSubject.value];
     const job   = queue.shift();
 
@@ -95,7 +94,10 @@ export class QueueRenderer {
       return;
     }
 
-    console.log('registering job');
+    if (config.debug) {
+      console.log('registering job');
+    }
+
     this.queueSubject.next(queue);
     this.containerSubjects[index].next({
       ...container,

@@ -39,7 +39,10 @@ export class Engine {
   );
 
   loop (timeDifference : number) : Observable<any> {
-    process.stdout.write('.');
+    if (config.debug) {
+      process.stdout.write('.');
+    }
+
     return combineLatest(
       this.cachedPaths.map(pathCache => pathCache.run(timeDifference) || of(null)),
     );
