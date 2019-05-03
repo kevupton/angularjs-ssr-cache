@@ -1,6 +1,9 @@
 import { Observable } from 'rxjs';
 import { of } from 'rxjs/internal/observable/of';
+import { tap } from 'rxjs/internal/operators/tap';
 import { config } from '../config';
+import { renderer } from '../renderer';
+import { cacheManager } from './cache-manager';
 
 export interface CachedPathConfig {
   path : string;
@@ -29,7 +32,9 @@ export class CachedPath {
       return of(null);
     }
 
-
+    renderer.addToQueue(this).pipe(
+      tap(result => cacheManager.save(this.path, result)),
+    );
   }
 
   private shouldRun (timeDifference : number) {
@@ -41,5 +46,9 @@ export class CachedPath {
     }
 
     return false;
+  }
+
+  public getUrl () {
+    return config.domain + this.path;
   }
 }

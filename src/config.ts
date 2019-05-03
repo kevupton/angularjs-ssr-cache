@@ -11,7 +11,7 @@ export interface Config {
 
 const DEFAULT_CONFIG : Partial<Config> = {
   globalCacheDuration: 600,
-  totalBrowsers: 4,
+  totalBrowsers: 2,
 };
 
 export const config : Config = Object.assign(

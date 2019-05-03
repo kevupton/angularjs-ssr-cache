@@ -1,9 +1,9 @@
-import rimraf from 'rimraf';
 import { combineLatest, interval, Observable } from 'rxjs';
 import { filter } from 'rxjs/internal/operators/filter';
 import { tap } from 'rxjs/internal/operators/tap';
 import { first, flatMap, shareReplay } from 'rxjs/operators';
 import { config } from '../config';
+import { cacheManager } from './cache-manager';
 import { CachedPath } from './cached-path';
 
 export class Engine {
@@ -17,9 +17,7 @@ export class Engine {
   }
 
   readonly start$ = new Observable<void>(subscriber => {
-    rimraf(config.cachedDir, () => {
-      console.log('Cleared existing cache');
-    });
+    cacheManager.clear();
 
     this.previousRunTime = Date.now();
     const subscription   = this.interval.pipe(
