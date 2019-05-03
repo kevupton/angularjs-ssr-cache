@@ -6,21 +6,22 @@ import { filter } from 'rxjs/internal/operators/filter';
 import { tap } from 'rxjs/internal/operators/tap';
 import { debounceTime, distinctUntilKeyChanged, flatMap, mapTo, shareReplay } from 'rxjs/operators';
 import { config } from './config';
-import { CachedPath } from './cached-path';
+import { CachePathJob } from './cache-path-job';
 
 interface BrowserContainer {
-  job : CachedPath | null;
+  job : CachePathJob | null;
   browser$ : Observable<Browser>;
 }
 
 export class QueueRenderer {
 
-  private readonly queueSubject        = new BehaviorSubject<CachedPath[]>([]);
-  private readonly containerSubjects   = this.registerContainers();
-  private readonly cachedPathToSubject = new WeakMap<CachedPath, AsyncSubject<string>>();
+  private readonly queueSubject        = new BehaviorSubject<CachePathJob[]>([]);
   private readonly subscriptions       = new Subscription();
+  private readonly cachedPathToSubject = new WeakMap<CachePathJob, AsyncSubject<string>>();
 
-  addToQueue (cachedPath : CachedPath) : Observable<string> {
+  private readonly containerSubjects   = this.registerContainers();
+
+  addToQueue (cachedPath : CachePathJob) : Observable<string> {
     const existingSubject = this.cachedPathToSubject.get(cachedPath);
 
     if (existingSubject) {
@@ -86,6 +87,7 @@ export class QueueRenderer {
       return;
     }
 
+    console.log('trying to create job');
     const queue = [...this.queueSubject.value];
     const job   = queue.shift();
 
@@ -93,6 +95,7 @@ export class QueueRenderer {
       return;
     }
 
+    console.log('registering job');
     this.queueSubject.next(queue);
     this.containerSubjects[index].next({
       ...container,

@@ -9,7 +9,7 @@ export interface CachedPathConfig {
   cacheDuration? : number;
 }
 
-export class CachedPath {
+export class CachePathJob {
 
   private readonly cacheDurationMs : number;
   private readonly path : string;
@@ -31,6 +31,7 @@ export class CachedPath {
       return;
     }
 
+    console.log('adding to queue ' + this.getUrl());
     return queueRenderer.addToQueue(this)
       .pipe(
         tap(result => cacheManager.save(this.path, result)),

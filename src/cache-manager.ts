@@ -10,6 +10,11 @@ export interface CachedFileInfo {
 }
 
 class CacheManager {
+  init() {
+    this.clear();
+    fs.mkdirSync(config.cachedDir);
+  }
+
   clear () {
     rimraf(config.cachedDir, () => {
       console.log('Cleared existing cache');
@@ -31,7 +36,7 @@ class CacheManager {
   }
 
   private getPath (urlPath : string) {
-    return path.join(config.cachedDir, urlPath.replace(/([\s\/])/gui, '\\$1'));
+    return path.join(config.cachedDir, urlPath.replace(/([\s\/])/gui, '_'));
   }
 }
 

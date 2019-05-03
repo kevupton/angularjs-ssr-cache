@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import path from 'path';
-import { CachedPathConfig } from './cached-path';
+import { updateEnvironment } from 'phantom-crawler-server';
+import { CachedPathConfig } from './cache-path-job';
 
 export interface Config {
   loopSpeed : number;
@@ -9,9 +10,11 @@ export interface Config {
   cachedDir : string;
   globalCacheDuration : number;
   totalBrowsers : number;
+  debug : boolean;
 }
 
 const DEFAULT_CONFIG : Partial<Config> = {
+  debug: false,
   loopSpeed: 20,
   globalCacheDuration: 600,
   totalBrowsers: 2,
@@ -29,3 +32,5 @@ export const config : Config = Object.assign(
   DEFAULT_CONFIG,
   configToLoad,
 );
+
+updateEnvironment({ debug: config.debug });
