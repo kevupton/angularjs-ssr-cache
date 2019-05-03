@@ -4,7 +4,7 @@ import { AsyncSubject, BehaviorSubject, combineLatest, Observable, Subscription 
 import { of } from 'rxjs/internal/observable/of';
 import { filter } from 'rxjs/internal/operators/filter';
 import { tap } from 'rxjs/internal/operators/tap';
-import { debounceTime, distinctUntilKeyChanged, flatMap, mapTo, shareReplay } from 'rxjs/operators';
+import { debounceTime, distinctUntilKeyChanged, flatMap, map, mapTo, shareReplay } from 'rxjs/operators';
 import { config } from './config';
 import { CachePathJob } from './cache-path-job';
 
@@ -110,10 +110,15 @@ export class QueueRenderer {
       throw new Error('Expected job to be defined, in handling of job');
     }
 
+    const url = job.getUrl();
+
     return browser$.pipe(
       flatMap(browser => browser.activePage$),
-      flatMap(page => combineLatest([
-        page.open(job.getUrl()),
+      flatMap(page => page.getUrl().pipe(
+        map(url => ({ page, url })),
+      )),
+      flatMap(({ page, url : previousUrl }) => combineLatest([
+        url === previousUrl ? page.refresh() : page.open(url),
         page.awaitPageLoad(),
         of(page),
       ])),
