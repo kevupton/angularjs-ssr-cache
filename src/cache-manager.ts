@@ -1,7 +1,13 @@
 import fs from 'fs';
-import rimraf from 'rimraf';
 import path from 'path';
-import { config } from '../config';
+import rimraf from 'rimraf';
+import { config } from './config';
+
+export interface CachedFileInfo {
+  path : string;
+  cachedAt : number;
+  content : string;
+}
 
 class CacheManager {
   clear () {
@@ -14,6 +20,14 @@ class CacheManager {
     fs.writeFileSync(this.getPath(path), JSON.stringify({
       path, cachedAt: Date.now(), content,
     }));
+  }
+
+  read (path : string) : undefined | CachedFileInfo {
+    if (!fs.existsSync(this.getPath(path))) {
+      return;
+    }
+
+    return JSON.parse(fs.readFileSync(this.getPath(path), 'utf-8'));
   }
 
   private getPath (urlPath : string) {

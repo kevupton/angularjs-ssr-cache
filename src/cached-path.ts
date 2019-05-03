@@ -1,9 +1,8 @@
-import { Observable } from 'rxjs';
-import { of } from 'rxjs/internal/observable/of';
 import { tap } from 'rxjs/internal/operators/tap';
-import { config } from '../config';
-import { renderer } from '../renderer';
+import { mapTo } from 'rxjs/operators';
 import { cacheManager } from './cache-manager';
+import { config } from './config';
+import { queueRenderer } from './queue-renderer';
 
 export interface CachedPathConfig {
   path : string;
@@ -16,25 +15,27 @@ export class CachedPath {
   private readonly path : string;
   private countDown = 0;
 
-  constructor(
-    { path, cacheDuration } : CachedPathConfig
+  constructor (
+    { path, cacheDuration } : CachedPathConfig,
   ) {
     this.cacheDurationMs = cacheDuration ? cacheDuration * 1000 : config.globalCacheDuration * 1000;
-    this.path = path;
+    this.path            = path;
 
     if (!this.path) {
       throw new Error('Invalid path provided for cached path');
     }
   }
 
-  public run (timeDifference : number) : Observable<any> {
+  public run (timeDifference : number) {
     if (!this.shouldRun(timeDifference)) {
-      return of(null);
+      return;
     }
 
-    renderer.addToQueue(this).pipe(
-      tap(result => cacheManager.save(this.path, result)),
-    );
+    return queueRenderer.addToQueue(this)
+      .pipe(
+        tap(result => cacheManager.save(this.path, result)),
+        mapTo(null),
+      );
   }
 
   private shouldRun (timeDifference : number) {

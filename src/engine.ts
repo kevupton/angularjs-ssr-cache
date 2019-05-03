@@ -1,10 +1,11 @@
 import { combineLatest, interval, Observable } from 'rxjs';
+import { of } from 'rxjs/internal/observable/of';
 import { filter } from 'rxjs/internal/operators/filter';
 import { tap } from 'rxjs/internal/operators/tap';
 import { first, flatMap, shareReplay } from 'rxjs/operators';
-import { config } from '../config';
 import { cacheManager } from './cache-manager';
 import { CachedPath } from './cached-path';
+import { config } from './config';
 
 export class Engine {
   private readonly interval = interval();
@@ -45,7 +46,7 @@ export class Engine {
 
   loop (timeDifference : number) : Observable<any> {
     return combineLatest(
-      this.cachedPaths.map(pathCache => pathCache.run(timeDifference)),
+      this.cachedPaths.map(pathCache => pathCache.run(timeDifference) || of(null)),
     );
   }
 }

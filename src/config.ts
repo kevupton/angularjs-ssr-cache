@@ -1,5 +1,5 @@
 import path from 'path';
-import { CachedPathConfig } from './engine/cached-path';
+import { CachedPathConfig } from './cached-path';
 
 export interface Config {
   domain : string;
