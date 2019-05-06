@@ -4,7 +4,7 @@ import { AsyncSubject, BehaviorSubject, combineLatest, Observable, Subscription 
 import { of } from 'rxjs/internal/observable/of';
 import { filter } from 'rxjs/internal/operators/filter';
 import { tap } from 'rxjs/internal/operators/tap';
-import { debounceTime, distinctUntilKeyChanged, flatMap, map, mapTo, shareReplay } from 'rxjs/operators';
+import { debounceTime, delay, distinctUntilKeyChanged, flatMap, map, mapTo, shareReplay } from 'rxjs/operators';
 import { CachePathJob } from './cache-path-job';
 import { config } from './config';
 
@@ -120,7 +120,9 @@ export class QueueRenderer {
         )),
       flatMap(({ page, url: previousUrl }) => combineLatest([
         url === previousUrl ? page.refresh() : page.open(url),
-        page.awaitPageLoad(),
+        page.awaitPageLoad().pipe(
+          delay(config.afterDelayDuration),
+        ),
         of(page),
       ])),
       flatMap(([, , page]) => page.getContent()),

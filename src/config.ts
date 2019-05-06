@@ -17,6 +17,7 @@ export interface Config {
   debug : boolean;
   htmlMinifyConfig : HtmlMinifierOptions;
   readonly version : string;
+  afterDelayDuration : number;
 }
 
 const DEFAULT_CONFIG : Partial<Config> = {
@@ -27,7 +28,7 @@ const DEFAULT_CONFIG : Partial<Config> = {
   globalCacheDuration: 600,
   totalBrowsers: 2,
   cachedDir: path.join(process.cwd(), './.cache'),
-  htmlMinifyConfig: {},
+  afterDelayDuration: 0,
 };
 
 const configJsonPath = path.join(process.cwd(), './config.json');
@@ -46,7 +47,6 @@ export const config : Readonly<Config> = Object.assign(
 Object.defineProperties(config, {
   version: {
     configurable: false,
-    writable: false,
     get () {
       return packageJson.version;
     }

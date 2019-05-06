@@ -11,7 +11,8 @@
     "copy-package-json": "node copy-package.json.js ./package.json ./src/package.json",
     "clean": "rimraf lib",
     "build": "npm run copy-package-json && webpack",
-    "prepublish": "npm run clean && npm run build"
+    "prepublish": "npm run clean && npm run build",
+    "test": "cd test && sudo ../bin/angularjs-ssr-cache.js"
   },
   "dependencies": {
     "core-js": "3",

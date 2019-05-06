@@ -1,0 +1,14 @@
+{
+  "domain": "http://localhost:3000",
+  "cachedPaths": [
+    {
+      "path": "",
+      "cacheDuration": 300
+    },
+    {
+      "path": "/search",
+      "cacheDuration": 300
+    }
+  ],
+  "debug": true
+}

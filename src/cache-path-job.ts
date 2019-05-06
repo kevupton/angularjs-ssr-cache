@@ -38,7 +38,7 @@ export class CachePathJob {
 
     return queueRenderer.addToQueue(this)
       .pipe(
-        map(content => minify(content, config.htmlMinifyConfig)),
+        map(content => this.minify(content)),
         map(content => this.tag(content)),
         tap(result => {
           if (config.debug) {
@@ -67,5 +67,15 @@ export class CachePathJob {
 
   private tag (html : string) {
     return `${ html }<!-- [ AngularJS SSR Cache -- v${ config.version } ] -->`;
+  }
+
+  private minify (html : string) {
+    try {
+      return `${ minify(html, config.htmlMinifyConfig) }<!-- Minified By AngularJS SSR Cache -->`;
+    }
+    catch (e) {
+      console.log('Failed to Minify HTML', e.message.substr(0, 50));
+      return html;
+    }
   }
 }
