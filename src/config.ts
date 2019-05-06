@@ -1,4 +1,5 @@
 import * as fs from 'fs';
+import { Options as HtmlMinifierOptions } from 'html-minifier';
 import path from 'path';
 import { updateEnvironment } from 'phantom-crawler-server';
 import { CachedPathConfig } from './cache-path-job';
@@ -13,6 +14,7 @@ export interface Config {
   globalCacheDuration : number;
   totalBrowsers : number;
   debug : boolean;
+  htmlMinifyConfig : HtmlMinifierOptions;
 }
 
 const DEFAULT_CONFIG : Partial<Config> = {
@@ -23,6 +25,7 @@ const DEFAULT_CONFIG : Partial<Config> = {
   globalCacheDuration: 600,
   totalBrowsers: 2,
   cachedDir: path.join(process.cwd(), './.cache'),
+  htmlMinifyConfig: {},
 };
 
 const configJsonPath = path.join(process.cwd(), './config.json');

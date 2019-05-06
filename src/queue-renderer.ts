@@ -1,3 +1,4 @@
+import { minify } from 'html-minifier';
 import { browserManager } from 'phantom-crawler-server';
 import { Browser } from 'phantom-crawler-server/lib/browser/Browser';
 import { AsyncSubject, BehaviorSubject, combineLatest, Observable, Subscription } from 'rxjs';
@@ -123,6 +124,7 @@ export class QueueRenderer {
         of(page),
       ])),
       flatMap(([, , page]) => page.getContent()),
+      map(content => minify(content, config.htmlMinifyConfig)),
       tap(content => {
         const subject = this.cachedPathToSubject.get(job);
 
