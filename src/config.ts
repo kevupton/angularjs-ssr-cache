@@ -15,7 +15,7 @@ export interface Config {
   globalCacheDuration : number;
   totalBrowsers : number;
   debug : boolean;
-  htmlMinifyConfig : HtmlMinifierOptions;
+  htmlMinifierConfig : HtmlMinifierOptions;
   readonly version : string;
   afterDelayDuration : number;
 }

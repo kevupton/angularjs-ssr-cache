@@ -71,7 +71,7 @@ export class CachePathJob {
 
   private minify (html : string) {
     try {
-      return `${ minify(html, config.htmlMinifyConfig) }<!-- Minified By AngularJS SSR Cache -->`;
+      return `${ minify(html, config.htmlMinifierConfig) }<!-- Minified By AngularJS SSR Cache -->`;
     }
     catch (e) {
       console.log('Failed to Minify HTML', e.message.substr(0, 50));
