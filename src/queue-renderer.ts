@@ -1,10 +1,11 @@
-import { BehaviorSubject, combineLatest, concat, Observable, Subject, Subscription } from 'rxjs';
+import { BehaviorSubject, combineLatest, Observable, Subject, Subscription } from 'rxjs';
 import { filter } from 'rxjs/internal/operators/filter';
 import { tap } from 'rxjs/internal/operators/tap';
-import { debounceTime, delay, distinctUntilKeyChanged, finalize, flatMap, mapTo, switchMap } from 'rxjs/operators';
+import { debounceTime, delay, distinctUntilKeyChanged, flatMap, mapTo, switchMap } from 'rxjs/operators';
 import { Browser } from './browser';
 import { CachePathJob } from './cache-path-job';
 import { config } from './config';
+import { concatComplete } from './lib/concat-complete';
 
 export interface BrowserContainer {
   job : CachePathJob | null;
@@ -126,10 +127,9 @@ export class QueueRenderer {
       throw new Error('Unable to retrieve the subject from the cache map');
     }
 
-    return concat(job.devices.map(deviceName => {
+    return concatComplete(job.devices.map(deviceName => {
       const page = browser.getDevicePage(deviceName);
 
-      console.log('registering device command');
       return page.getUrl()
         .pipe(
           flatMap((previousUrl) => combineLatest([
@@ -140,14 +140,12 @@ export class QueueRenderer {
               ),
           ])),
           flatMap(() => page.getContent()),
-          tap(() => console.log('nexting')),
           tap(output => subject.next({ deviceName, output })),
           mapTo(null),
         );
     }))
       .pipe(
-        finalize(() => {
-          console.log('completing job'); // TODO work this out
+        tap(() => {
           subject.complete();
 
           // Complete the job so that it can move onto the next job

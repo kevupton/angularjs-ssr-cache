@@ -4,3 +4,4 @@ node_modules
 .cache
 lib
 src/package.json
+!src/lib
