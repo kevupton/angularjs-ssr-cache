@@ -735,6 +735,18 @@
   resolved "https://registry.yarnpkg.com/@types/node/-/node-11.13.9.tgz#f80697caca7f7fb2526527a5c5a2743487f05ccc"
   integrity sha512-NJ4yuEVw5podZbINp3tEqUIImMSAEHaCXRiWCf3KC32l6hIKf0iPJEh2uZdT0fELfRYk310yLmMXqy2leZQUbg==
 
+"@types/phantom@^3.2.5":
+  version "3.2.5"
+  resolved "https://registry.yarnpkg.com/@types/phantom/-/phantom-3.2.5.tgz#5165e6129bb2c292cfd9b972086d4a101539bf16"
+  integrity sha512-7m36DoKSvZgBGWp0xiJ74eHnuotyrpDyQ6m+lers5iMvW4QX+RvBENn7PCjNix7OVqPWlBM+7AqzYVIQ7NrKrA==
+
+"@types/puppeteer@^1.12.4":
+  version "1.12.4"
+  resolved "https://registry.yarnpkg.com/@types/puppeteer/-/puppeteer-1.12.4.tgz#8388efdb0b30a54a7e7c4831ca0d709191d77ff1"
+  integrity sha512-aaGbJaJ9TuF9vZfTeoh876sBa+rYJWPwtsmHmYr28pGr42ewJnkDTq2aeSKEmS39SqUdkwLj73y/d7rBSp7mDQ==
+  dependencies:
+    "@types/node" "*"
+
 "@types/range-parser@*":
   version "1.2.3"
   resolved "https://registry.yarnpkg.com/@types/range-parser/-/range-parser-1.2.3.tgz#7ee330ba7caafb98090bece86a5ee44115904c2c"
@@ -2926,10 +2938,10 @@ he@^1.2.0:
   resolved "https://registry.yarnpkg.com/he/-/he-1.2.0.tgz#84ae65fa7eafb165fddb61566ae14baf05664f0f"
   integrity sha512-F/1DnUGPopORZi0ni+CvrCgHQ5FyEAHRLSApuYWMmrbSwoN2Mn/7k+Gl38gJnR7yyDZk6WLXwiGod1JOWNDKGw==
 
-headless-browser@0.0.1:
-  version "0.0.1"
-  resolved "https://registry.yarnpkg.com/headless-browser/-/headless-browser-0.0.1.tgz#6d4efc9e893216188a04ef36969d04319310d047"
-  integrity sha512-kaRWkI1JudCZ0dQHbgT4U91DmzwgyDIurJVx4mVxjoDMkaYBepLqsYhRDndYN3nj6/84e/RJx4w3Kh5djAuUwA==
+headless-browser@0.0.3:
+  version "0.0.3"
+  resolved "https://registry.yarnpkg.com/headless-browser/-/headless-browser-0.0.3.tgz#dbb5f50295ff35afb4315e1fd6eccf4a056a27c8"
+  integrity sha512-BI2c8JMhu6+dJmzvodSpOfgUwdQqr0n2NYZ7vdmGtoepATXVjQABic6r4xYdwhDgbJqToVTf7nD0iVWEywoLyg==
   dependencies:
     argparse "1.0.10"
     core-js "3"

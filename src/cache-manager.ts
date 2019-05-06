@@ -19,22 +19,34 @@ class CacheManager {
     });
   }
 
-  save (path : string, content : string) {
-    fs.writeFileSync(this.getPath(path), JSON.stringify({
+  save (path : string, deviceName : string, content : string) {
+    if (!fs.existsSync(this.getDevicePath(deviceName))) {
+      fs.mkdirSync(this.getDevicePath(deviceName));
+    }
+
+    fs.writeFileSync(this.getPath(path, deviceName), JSON.stringify({
       path, cachedAt: Date.now(), content,
     }));
   }
 
-  read (path : string) : undefined | CachedFileInfo {
-    if (!fs.existsSync(this.getPath(path))) {
+  read (path : string, deviceName : string) : undefined | CachedFileInfo {
+    if (!fs.existsSync(this.getPath(path, deviceName))) {
       return;
     }
 
-    return JSON.parse(fs.readFileSync(this.getPath(path), 'utf-8'));
+    return JSON.parse(fs.readFileSync(this.getPath(path, deviceName), 'utf-8'));
   }
 
-  private getPath (urlPath : string) {
-    return path.join(config.cachedDir, urlPath.replace(/([\s\/])/gui, '_'));
+  private getPath (urlPath : string, deviceName : string) {
+    return path.join(this.getDevicePath(deviceName), urlPath);
+  }
+
+  private getDevicePath(deviceName : string) {
+    return path.join(config.cachedDir, './' + this.parseString(deviceName));
+  }
+
+  private parseString(str : string) {
+    return str.replace(/([\s\/])/gui, '_');
   }
 }
 

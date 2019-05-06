@@ -1,34 +1,37 @@
-import { browserManager } from 'headless-browser';
-import { Browser } from 'headless-browser/lib/browser/Browser';
-import { AsyncSubject, BehaviorSubject, combineLatest, Observable, Subscription } from 'rxjs';
-import { of } from 'rxjs/internal/observable/of';
+import { BehaviorSubject, combineLatest, concat, Observable, Subject, Subscription } from 'rxjs';
 import { filter } from 'rxjs/internal/operators/filter';
 import { tap } from 'rxjs/internal/operators/tap';
-import { debounceTime, delay, distinctUntilKeyChanged, flatMap, map, mapTo, shareReplay } from 'rxjs/operators';
+import { debounceTime, delay, distinctUntilKeyChanged, finalize, flatMap, mapTo, switchMap } from 'rxjs/operators';
+import { Browser } from './browser';
 import { CachePathJob } from './cache-path-job';
 import { config } from './config';
 
-interface BrowserContainer {
+export interface BrowserContainer {
   job : CachePathJob | null;
-  browser$ : Observable<Browser>;
+  readonly browser : Browser;
+}
+
+export interface DeviceOutput {
+  readonly deviceName : string;
+  readonly output : string;
 }
 
 export class QueueRenderer {
 
   private readonly queueSubject        = new BehaviorSubject<CachePathJob[]>([]);
   private readonly subscriptions       = new Subscription();
-  private readonly cachedPathToSubject = new WeakMap<CachePathJob, AsyncSubject<string>>();
+  private readonly cachedPathToSubject = new WeakMap<CachePathJob, Subject<DeviceOutput>>();
 
   private readonly containerSubjects = this.registerContainers();
 
-  addToQueue (cachedPath : CachePathJob) : Observable<string> {
+  addToQueue (cachedPath : CachePathJob) : Observable<DeviceOutput> {
     const existingSubject = this.cachedPathToSubject.get(cachedPath);
 
     if (existingSubject) {
       return existingSubject.asObservable();
     }
 
-    const jobCompleteSubject = new AsyncSubject<string>();
+    const jobCompleteSubject = new Subject<DeviceOutput>();
 
     this.cachedPathToSubject.set(cachedPath, jobCompleteSubject);
     this.queueSubject.next([
@@ -43,8 +46,7 @@ export class QueueRenderer {
     const containerSubjects = Array.from(Array(config.totalBrowsers))
       .map(() =>
         new BehaviorSubject<BrowserContainer>({
-          browser$: browserManager.openNewInstance()
-            .pipe(shareReplay(1)),
+          browser: new Browser(),
           job: null,
         }),
       );
@@ -53,11 +55,14 @@ export class QueueRenderer {
       this.registerContainerJobListener(containerSubject);
     });
 
-    const subscription = combineLatest([
-      this.queueSubject,
-      combineLatest(containerSubjects),
-    ])
+    const subscription = combineLatest(
+      containerSubjects.map(subject => subject.value.browser.launch$),
+    )
       .pipe(
+        switchMap(() => combineLatest([
+          this.queueSubject,
+          combineLatest(containerSubjects),
+        ])),
         debounceTime(0), // dont run the changes straight away
       )
       .subscribe(([, containers]) => {
@@ -105,45 +110,54 @@ export class QueueRenderer {
     });
   }
 
-  private handleJob ({ job, browser$ } : BrowserContainer, containerSubject : BehaviorSubject<BrowserContainer>) {
+  private handleJob ({ job, browser } : BrowserContainer, containerSubject : BehaviorSubject<BrowserContainer>) {
+    if (config.debug) {
+      console.log('handling job');
+    }
+
     if (!job) {
       throw new Error('Expected job to be defined, in handling of job');
     }
 
-    const url = job.getUrl();
+    const url     = job.getUrl();
+    const subject = this.cachedPathToSubject.get(job);
 
-    return browser$.pipe(
-      flatMap(browser => browser.activePage$),
-      flatMap(page => page.getUrl()
+    if (!subject) {
+      throw new Error('Unable to retrieve the subject from the cache map');
+    }
+
+    return concat(job.devices.map(deviceName => {
+      const page = browser.getDevicePage(deviceName);
+
+      console.log('registering device command');
+      return page.getUrl()
         .pipe(
-          map(url => ({ page, url })),
-        )),
-      flatMap(({ page, url: previousUrl }) => combineLatest([
-        url === previousUrl ? page.refresh() : page.open(url),
-        page.awaitPageLoad().pipe(
-          delay(config.afterDelayDuration),
-        ),
-        of(page),
-      ])),
-      flatMap(([, , page]) => page.getContent()),
-      tap(content => {
-        const subject = this.cachedPathToSubject.get(job);
+          flatMap((previousUrl) => combineLatest([
+            url === previousUrl ? page.refresh() : page.open(url),
+            page.awaitPageLoad()
+              .pipe(
+                delay(config.afterDelayDuration),
+              ),
+          ])),
+          flatMap(() => page.getContent()),
+          tap(() => console.log('nexting')),
+          tap(output => subject.next({ deviceName, output })),
+          mapTo(null),
+        );
+    }))
+      .pipe(
+        finalize(() => {
+          console.log('completing job'); // TODO work this out
+          subject.complete();
 
-        if (!subject) {
-          throw new Error('Unable to retrieve the subject from the cache map');
-        }
-
-        subject.next(content);
-        subject.complete();
-
-        // Complete the job so that it can move onto the next job
-        containerSubject.next({
-          ...containerSubject.value,
-          job: null,
-        });
-      }),
-      mapTo(null),
-    );
+          // Complete the job so that it can move onto the next job
+          this.cachedPathToSubject.delete(job);
+          containerSubject.next({
+            ...containerSubject.value,
+            job: null,
+          });
+        }),
+      );
   }
 }
 

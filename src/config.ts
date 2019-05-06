@@ -2,6 +2,7 @@ import * as fs from 'fs';
 import { Options as HtmlMinifierOptions } from 'html-minifier';
 import path from 'path';
 import { updateEnvironment } from 'headless-browser';
+import { DeviceConfig } from './browser';
 import { CachedPathConfig } from './cache-path-job';
 import packageJson from './package.json';
 
@@ -18,7 +19,10 @@ export interface Config {
   htmlMinifierConfig : HtmlMinifierOptions;
   readonly version : string;
   afterDelayDuration : number;
+  devices : DeviceConfig[];
 }
+
+export const DEFAULT_DEVICE_NAME = 'default';
 
 const DEFAULT_CONFIG : Partial<Config> = {
   port: 1002,
@@ -29,6 +33,20 @@ const DEFAULT_CONFIG : Partial<Config> = {
   totalBrowsers: 2,
   cachedDir: path.join(process.cwd(), './.cache'),
   afterDelayDuration: 0,
+  devices: [
+    {
+      name: DEFAULT_DEVICE_NAME,
+      userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.121 Safari/537.36',
+      viewport: {
+        width: 1200,
+        height: 1080,
+        deviceScaleFactor: 1,
+        isMobile: false,
+        hasTouch: false,
+        isLandscape: false
+      }
+    }
+  ]
 };
 
 const configJsonPath = path.join(process.cwd(), './config.json');

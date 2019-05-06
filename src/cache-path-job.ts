@@ -1,6 +1,6 @@
 import { minify } from 'html-minifier';
 import { tap } from 'rxjs/internal/operators/tap';
-import { map, mapTo } from 'rxjs/operators';
+import { mapTo } from 'rxjs/operators';
 import { cacheManager } from './cache-manager';
 import { config } from './config';
 import { queueRenderer } from './queue-renderer';
@@ -8,19 +8,23 @@ import { queueRenderer } from './queue-renderer';
 export interface CachedPathConfig {
   path : string;
   cacheDuration? : number;
+  devices? : string[];
 }
 
 export class CachePathJob {
 
+  public readonly devices : string[];
   private readonly cacheDurationMs : number;
   private readonly path : string;
+
   private countDown = 0;
 
   constructor (
-    { path, cacheDuration } : CachedPathConfig,
+    { path, cacheDuration, devices } : CachedPathConfig,
   ) {
     this.cacheDurationMs = cacheDuration ? cacheDuration * 1000 : config.globalCacheDuration * 1000;
     this.path            = path.startsWith('/') ? path : `/${ path }`;
+    this.devices         = devices || config.devices.map(({ name }) => name); // default to use all the devices
 
     if (!this.path) {
       throw new Error('Invalid path provided for cached path');
@@ -38,13 +42,12 @@ export class CachePathJob {
 
     return queueRenderer.addToQueue(this)
       .pipe(
-        map(content => this.minify(content)),
-        map(content => this.tag(content)),
-        tap(result => {
+        tap(({ deviceName, output }) => {
+          const result = this.tag(this.minify(output));
           if (config.debug) {
             console.log('saving result');
           }
-          cacheManager.save(this.path, result);
+          cacheManager.save(this.path, deviceName, result);
         }),
         mapTo(null),
       );
