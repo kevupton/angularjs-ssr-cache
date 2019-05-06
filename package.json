@@ -1,6 +1,6 @@
 {
   "name": "angularjs-ssr-cache",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "Server Side Rendering Cache for AngularJS Projects",
   "main": "lib/app.js",
   "typings": "lib/index.d.ts",
@@ -17,8 +17,8 @@
   "dependencies": {
     "core-js": "3",
     "express": "^4.16.4",
-    "html-minifier": "^4.0.0",
     "headless-browser": "0.0.1",
+    "html-minifier": "^4.0.0",
     "rxjs": "^6.5.1"
   },
   "devDependencies": {
@@ -34,8 +34,8 @@
     "babel-node": "7.0.0-beta.3",
     "babel-plugin-transform-class-properties": "7.0.0-beta.3",
     "babel-plugin-transform-runtime": "7.0.0-beta.3",
-    "json-loader": "0.5.7",
     "cross-env": "5.2.0",
+    "json-loader": "0.5.7",
     "rimraf": "2.6.3",
     "ts-loader": "^5.4.5",
     "ts-node": "^8.1.0",
