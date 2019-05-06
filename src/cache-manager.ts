@@ -21,9 +21,15 @@ class CacheManager {
 
   save (path : string, deviceName : string, content : string) {
     if (!fs.existsSync(this.getDevicePath(deviceName))) {
+      if (config.debug) {
+        console.log(`Creating Cache Device Directory [${ deviceName }]`);
+      }
       fs.mkdirSync(this.getDevicePath(deviceName));
     }
 
+    if (config.debug) {
+      console.log('Writing Cache to file: ' + this.getPath(path, deviceName))
+    }
     fs.writeFileSync(this.getPath(path, deviceName), JSON.stringify({
       path, cachedAt: Date.now(), content,
     }));
@@ -38,7 +44,7 @@ class CacheManager {
   }
 
   private getPath (urlPath : string, deviceName : string) {
-    return path.join(this.getDevicePath(deviceName), urlPath);
+    return path.join(this.getDevicePath(deviceName), this.parseString(urlPath));
   }
 
   private getDevicePath(deviceName : string) {

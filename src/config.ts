@@ -16,6 +16,7 @@ export interface Config {
   globalCacheDuration : number;
   totalBrowsers : number;
   debug : boolean;
+  minifyHtml : boolean;
   htmlMinifierConfig : HtmlMinifierOptions;
   readonly version : string;
   afterDelayDuration : number;
@@ -33,6 +34,7 @@ const DEFAULT_CONFIG : Partial<Config> = {
   totalBrowsers: 2,
   cachedDir: path.join(process.cwd(), './.cache'),
   afterDelayDuration: 0,
+  minifyHtml: true,
   devices: [
     {
       name: DEFAULT_DEVICE_NAME,
@@ -46,7 +48,7 @@ const DEFAULT_CONFIG : Partial<Config> = {
         isLandscape: false
       }
     }
-  ]
+  ],
 };
 
 const configJsonPath = path.join(process.cwd(), './config.json');

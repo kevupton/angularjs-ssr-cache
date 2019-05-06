@@ -132,13 +132,18 @@ export class QueueRenderer {
 
       return page.getUrl()
         .pipe(
-          flatMap((previousUrl) => combineLatest([
-            url === previousUrl ? page.refresh() : page.open(url),
-            page.awaitPageLoad()
-              .pipe(
-                delay(config.afterDelayDuration),
-              ),
-          ])),
+          flatMap((previousUrl) => {
+            if (url === previousUrl && config.debug) {
+              console.log('Refreshing Page.');
+            }
+            return combineLatest([
+              url === previousUrl ? page.refresh() : page.open(url),
+              page.awaitPageLoad()
+                .pipe(
+                  delay(config.afterDelayDuration),
+                ),
+            ]);
+          }),
           flatMap(() => page.getContent()),
           tap(output => subject.next({ deviceName, output })),
           mapTo(null),

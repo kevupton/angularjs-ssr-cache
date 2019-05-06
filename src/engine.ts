@@ -1,6 +1,6 @@
 import { combineLatest, interval, Observable } from 'rxjs';
 import { of } from 'rxjs/internal/observable/of';
-import { first, flatMap, shareReplay } from 'rxjs/operators';
+import { flatMap, shareReplay } from 'rxjs/operators';
 import { cacheManager } from './cache-manager';
 import { CachePathJob } from './cache-path-job';
 import { config } from './config';
@@ -24,10 +24,7 @@ export class Engine {
         const timeDifference = now - this.previousRunTime;
 
         this.previousRunTime = now;
-        return this.loop(timeDifference)
-          .pipe(
-            first(),
-          );
+        return this.loop(timeDifference);
       }),
     )
       .subscribe();
