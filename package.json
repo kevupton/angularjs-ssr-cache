@@ -1,6 +1,6 @@
 {
   "name": "angularjs-ssr-cache",
-  "version": "0.0.10",
+  "version": "0.1.0",
   "description": "Server Side Rendering Cache for AngularJS Projects",
   "main": "lib/app.js",
   "typings": "lib/index.d.ts",
