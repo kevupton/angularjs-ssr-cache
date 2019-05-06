@@ -66,6 +66,6 @@ export class CachePathJob {
   }
 
   private tag (html : string) {
-    return `${ html }<!-- [AngularJS SSR Cache -- v${ config.version }] -->`;
+    return `${ html }<!-- [ AngularJS SSR Cache -- v${ config.version } ] -->`;
   }
 }
