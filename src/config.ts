@@ -1,8 +1,9 @@
 import * as fs from 'fs';
 import { Options as HtmlMinifierOptions } from 'html-minifier';
 import path from 'path';
-import { updateEnvironment } from 'phantom-crawler-server';
+import { updateEnvironment } from 'headless-browser';
 import { CachedPathConfig } from './cache-path-job';
+import packageJson from './package.json';
 
 export interface Config {
   port : number;
@@ -15,6 +16,7 @@ export interface Config {
   totalBrowsers : number;
   debug : boolean;
   htmlMinifyConfig : HtmlMinifierOptions;
+  readonly version : string;
 }
 
 const DEFAULT_CONFIG : Partial<Config> = {
@@ -36,9 +38,19 @@ if (!fs.existsSync(configJsonPath)) {
 }
 
 const configToLoad           = JSON.parse(fs.readFileSync(configJsonPath, 'utf-8'));
-export const config : Config = Object.assign(
+export const config : Readonly<Config> = Object.assign(
   DEFAULT_CONFIG,
   configToLoad,
 );
+
+Object.defineProperties(config, {
+  version: {
+    configurable: false,
+    writable: false,
+    get () {
+      return packageJson.version;
+    }
+  }
+});
 
 updateEnvironment({ debug: config.debug });

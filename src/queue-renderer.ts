@@ -1,5 +1,5 @@
-import { browserManager } from 'phantom-crawler-server';
-import { Browser } from 'phantom-crawler-server/lib/browser/Browser';
+import { browserManager } from 'headless-browser';
+import { Browser } from 'headless-browser/lib/browser/Browser';
 import { AsyncSubject, BehaviorSubject, combineLatest, Observable, Subscription } from 'rxjs';
 import { of } from 'rxjs/internal/observable/of';
 import { filter } from 'rxjs/internal/operators/filter';

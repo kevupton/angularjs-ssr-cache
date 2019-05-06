@@ -20,7 +20,7 @@ export class CachePathJob {
     { path, cacheDuration } : CachedPathConfig,
   ) {
     this.cacheDurationMs = cacheDuration ? cacheDuration * 1000 : config.globalCacheDuration * 1000;
-    this.path            = path.startsWith('/') ? path : `/${path}`;
+    this.path            = path.startsWith('/') ? path : `/${ path }`;
 
     if (!this.path) {
       throw new Error('Invalid path provided for cached path');
@@ -39,6 +39,7 @@ export class CachePathJob {
     return queueRenderer.addToQueue(this)
       .pipe(
         map(content => minify(content, config.htmlMinifyConfig)),
+        map(content => this.tag(content)),
         tap(result => {
           if (config.debug) {
             console.log('saving result');
@@ -62,5 +63,9 @@ export class CachePathJob {
 
   public getUrl () {
     return config.domain + this.path;
+  }
+
+  private tag (html : string) {
+    return `${ html }<!-- [AngularJS SSR Cache -- v${ config.version }] -->`;
   }
 }
