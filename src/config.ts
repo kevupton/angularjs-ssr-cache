@@ -21,9 +21,10 @@ export interface Config {
   readonly version : string;
   afterDelayDuration : number;
   devices : DeviceConfig[];
+  defaultDevice : string;
 }
 
-export const DEFAULT_DEVICE_NAME = 'default';
+const DEFAULT_DEVICE_NAME = 'default';
 
 const DEFAULT_CONFIG : Partial<Config> = {
   port: 1002,
@@ -35,6 +36,7 @@ const DEFAULT_CONFIG : Partial<Config> = {
   cachedDir: path.join(process.cwd(), './.cache'),
   afterDelayDuration: 0,
   minifyHtml: true,
+  defaultDevice: DEFAULT_DEVICE_NAME,
   devices: [
     {
       name: DEFAULT_DEVICE_NAME,
