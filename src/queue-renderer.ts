@@ -1,4 +1,3 @@
-import { minify } from 'html-minifier';
 import { browserManager } from 'phantom-crawler-server';
 import { Browser } from 'phantom-crawler-server/lib/browser/Browser';
 import { AsyncSubject, BehaviorSubject, combineLatest, Observable, Subscription } from 'rxjs';
@@ -6,8 +5,8 @@ import { of } from 'rxjs/internal/observable/of';
 import { filter } from 'rxjs/internal/operators/filter';
 import { tap } from 'rxjs/internal/operators/tap';
 import { debounceTime, distinctUntilKeyChanged, flatMap, map, mapTo, shareReplay } from 'rxjs/operators';
-import { config } from './config';
 import { CachePathJob } from './cache-path-job';
+import { config } from './config';
 
 interface BrowserContainer {
   job : CachePathJob | null;
@@ -20,7 +19,7 @@ export class QueueRenderer {
   private readonly subscriptions       = new Subscription();
   private readonly cachedPathToSubject = new WeakMap<CachePathJob, AsyncSubject<string>>();
 
-  private readonly containerSubjects   = this.registerContainers();
+  private readonly containerSubjects = this.registerContainers();
 
   addToQueue (cachedPath : CachePathJob) : Observable<string> {
     const existingSubject = this.cachedPathToSubject.get(cachedPath);
@@ -115,16 +114,16 @@ export class QueueRenderer {
 
     return browser$.pipe(
       flatMap(browser => browser.activePage$),
-      flatMap(page => page.getUrl().pipe(
-        map(url => ({ page, url })),
-      )),
-      flatMap(({ page, url : previousUrl }) => combineLatest([
+      flatMap(page => page.getUrl()
+        .pipe(
+          map(url => ({ page, url })),
+        )),
+      flatMap(({ page, url: previousUrl }) => combineLatest([
         url === previousUrl ? page.refresh() : page.open(url),
         page.awaitPageLoad(),
         of(page),
       ])),
       flatMap(([, , page]) => page.getContent()),
-      map(content => minify(content, config.htmlMinifyConfig)),
       tap(content => {
         const subject = this.cachedPathToSubject.get(job);
 

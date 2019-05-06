@@ -1,5 +1,6 @@
+import { minify } from 'html-minifier';
 import { tap } from 'rxjs/internal/operators/tap';
-import { mapTo } from 'rxjs/operators';
+import { map, mapTo } from 'rxjs/operators';
 import { cacheManager } from './cache-manager';
 import { config } from './config';
 import { queueRenderer } from './queue-renderer';
@@ -37,6 +38,7 @@ export class CachePathJob {
 
     return queueRenderer.addToQueue(this)
       .pipe(
+        map(content => minify(content, config.htmlMinifyConfig)),
         tap(result => {
           if (config.debug) {
             console.log('saving result');
