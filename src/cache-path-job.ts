@@ -43,11 +43,13 @@ export class CachePathJob {
     return queueRenderer.addToQueue(this)
       .pipe(
         tap(({ deviceName, output }) => {
-          const result = this.tag(this.minify(output), deviceName);
+          const tags : string[] = [`Device: ${ deviceName }`];
+          const result          = this.minify(output, tags);
+
           if (config.logLevel >= 3) {
             console.log('saving result');
           }
-          cacheManager.save(this.path, deviceName, result);
+          cacheManager.save(this.path, deviceName, result, tags);
         }),
         mapTo(null),
       );
@@ -68,19 +70,15 @@ export class CachePathJob {
     return config.domain + this.path;
   }
 
-  private tag (html : string, deviceName : string) {
-    return `${ html }
-<!-- [ AngularJS SSR Cache ] [ Version: v${ config.version } ] [ Device: ${ deviceName } ] [ Created At: ${ Date.now() } ] -->`;
-  }
-
-  private minify (html : string) {
+  private minify (html : string, tags : string[]) {
     if (!config.minifyHtml) {
       return html;
     }
 
     try {
-      return `${ minify(html, config.htmlMinifierConfig) }
-<!-- Minified By AngularJS SSR Cache -->`;
+      const output = minify(html, config.htmlMinifierConfig);
+      tags.push('Minified');
+      return output;
     }
     catch (e) {
       console.log('Failed to Minify HTML', e.message.substr(0, 50));

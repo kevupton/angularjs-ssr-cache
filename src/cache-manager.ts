@@ -10,6 +10,11 @@ export interface CachedFileInfo {
 }
 
 class CacheManager {
+  private readonly staticTags = [
+    'AngularJS SSR Cache',
+    `Version: v${ config.version }`,
+  ];
+
   init () {
     if (config.logLevel >= 3) {
       console.log('Cleared existing cache');
@@ -19,7 +24,7 @@ class CacheManager {
     });
   }
 
-  save (path : string, deviceName : string, content : string) {
+  save (path : string, deviceName : string, content : string, tags : string[] = []) {
     if (!fs.existsSync(this.getDevicePath(deviceName))) {
       if (config.logLevel >= 3) {
         console.log(`Creating Cache Device Directory [${ deviceName }]`);
@@ -28,10 +33,16 @@ class CacheManager {
     }
 
     if (config.logLevel >= 3) {
-      console.log('Writing Cache to file: ' + this.getPath(path, deviceName))
+      console.log('Writing Cache to file: ' + this.getPath(path, deviceName));
     }
+
+    const cachedAt = new Date();
+    tags.push(`Cached At: ${ cachedAt }`);
+
     fs.writeFileSync(this.getPath(path, deviceName), JSON.stringify({
-      path, cachedAt: Date.now(), content,
+      path,
+      cachedAt: cachedAt.getTime(),
+      content: this.tag(content, tags),
     }));
   }
 
@@ -43,15 +54,26 @@ class CacheManager {
     return JSON.parse(fs.readFileSync(this.getPath(path, deviceName), 'utf-8'));
   }
 
+  private tag (html : string, tags : string[]) {
+    return `${ html }
+<!--
+\t${ [
+      ...this.staticTags,
+      ...tags,
+    ].map(tag => `[ ${ tag } ]`).join('\n\t') }
+  -->
+`;
+  }
+
   private getPath (urlPath : string, deviceName : string) {
     return path.join(this.getDevicePath(deviceName), this.parseString(urlPath));
   }
 
-  private getDevicePath(deviceName : string) {
+  private getDevicePath (deviceName : string) {
     return path.join(config.cachedDir, './' + this.parseString(deviceName));
   }
 
-  private parseString(str : string) {
+  private parseString (str : string) {
     return str.replace(/([\s\/])/gui, '_');
   }
 }
