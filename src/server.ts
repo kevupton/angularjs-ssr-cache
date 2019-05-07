@@ -1,8 +1,14 @@
 import express, { Request, Response } from 'express';
 import { CachedFileInfo, cacheManager } from './cache-manager';
 import { config } from './config';
+import { urlencoded, json } from 'body-parser';
 
 export const app = express();
+
+app.use(urlencoded({
+  extended: true,
+}));
+app.use(json());
 
 app.get('*', (req : Request, res : Response) => {
   res.json(parseInfo(
