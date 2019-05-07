@@ -38,6 +38,6 @@ function parseInfo (info? : CachedFileInfo) {
 
 export function startServer () {
   app.listen(config.port, config.host, () => {
-    logger.log(`Listening at ${ config.host }:${ config.port }`);
+    logger.log(`Listening on ${ config.host }:${ config.port }`);
   });
 }
