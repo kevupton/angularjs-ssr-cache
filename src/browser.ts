@@ -36,7 +36,7 @@ export class Browser {
               .pipe(
                 mapTo(page),
                 tap(() => {
-                  if (config.debug <= 2) {
+                  if (config.logLevel >= 3) {
                     console.log('Registered device with name: [' + device.name + ']');
                   }
                 }),

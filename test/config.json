@@ -10,7 +10,7 @@
       "cacheDuration": 300
     }
   ],
-  "debug": 1,
+  "logLevel": 3,
   "headless": false,
   "devices": [
     {

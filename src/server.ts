@@ -11,7 +11,7 @@ app.use(urlencoded({
 app.use(json());
 
 app.get('*', (req : Request, res : Response) => {
-  if (config.debug <= 1) {
+  if (config.logLevel >= 3) {
     console.log(`REQUEST - ${req.path}`);
   }
   res.json(parseInfo(
@@ -20,7 +20,7 @@ app.get('*', (req : Request, res : Response) => {
 });
 
 app.post('*', (req : Request, res : Response) => {
-  if (config.debug <= 1) {
+  if (config.logLevel >= 3) {
     console.log(`REQUEST - [${ req.body.deviceName }] : ${req.path}`);
   }
   res.json(parseInfo(
