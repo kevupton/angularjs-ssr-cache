@@ -101,7 +101,7 @@ export class QueueRenderer {
       return;
     }
 
-    if (config.debug) {
+    if (config.debug <= 2) {
       console.log('registering job');
     }
 
@@ -113,7 +113,7 @@ export class QueueRenderer {
   }
 
   private handleJob ({ job, browser } : BrowserContainer, containerSubject : BehaviorSubject<BrowserContainer>) {
-    if (config.debug) {
+    if (config.debug <= 2) {
       console.log('handling job');
     }
 
@@ -140,7 +140,7 @@ export class QueueRenderer {
           };
 
           if (url === previousUrl) {
-            if (config.debug) {
+            if (config.debug <= 2) {
               console.log('Refreshing Page ...');
             }
             return page.refresh(options);

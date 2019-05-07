@@ -11,13 +11,16 @@ app.use(urlencoded({
 app.use(json());
 
 app.get('*', (req : Request, res : Response) => {
+  if (config.debug <= 1) {
+    console.log(`REQUEST - ${req.path}`);
+  }
   res.json(parseInfo(
     cacheManager.read(req.path, config.defaultDevice),
   ));
 });
 
 app.post('*', (req : Request, res : Response) => {
-  if (config.debug) {
+  if (config.debug <= 1) {
     console.log(`REQUEST - [${ req.body.deviceName }] : ${req.path}`);
   }
   res.json(parseInfo(

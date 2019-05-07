@@ -15,7 +15,7 @@ export interface Config {
   cachedDir : string;
   globalCacheDuration : number;
   totalBrowsers : number;
-  debug : boolean;
+  debug : number;
   minifyHtml : boolean;
   htmlMinifierConfig : HtmlMinifierOptions;
   readonly version : string;
@@ -30,7 +30,7 @@ const DEFAULT_DEVICE_NAME = 'default';
 const DEFAULT_CONFIG : Partial<Config> = {
   port: 1002,
   host: '127.0.0.1',
-  debug: false,
+  debug: 0,
   loopSpeed: 20,
   globalCacheDuration: 600,
   totalBrowsers: 2,
@@ -81,4 +81,4 @@ Object.defineProperties(config, {
   }
 });
 
-updateEnvironment({ debug: config.debug, headless: config.headless });
+updateEnvironment({ debug: config.debug <= 2, headless: config.headless });

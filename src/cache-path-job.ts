@@ -36,7 +36,7 @@ export class CachePathJob {
       return;
     }
 
-    if (config.debug) {
+    if (config.debug <= 2) {
       console.log('adding to queue ' + this.getUrl());
     }
 
@@ -44,7 +44,7 @@ export class CachePathJob {
       .pipe(
         tap(({ deviceName, output }) => {
           const result = this.tag(this.minify(output), deviceName);
-          if (config.debug) {
+          if (config.debug <= 2) {
             console.log('saving result');
           }
           cacheManager.save(this.path, deviceName, result);

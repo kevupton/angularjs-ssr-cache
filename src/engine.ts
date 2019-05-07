@@ -36,7 +36,7 @@ export class Engine {
   );
 
   loop (timeDifference : number) : Observable<any> {
-    if (config.debug) {
+    if (config.debug <= 1) {
       process.stdout.write('.');
     }
 

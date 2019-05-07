@@ -11,7 +11,7 @@ export interface CachedFileInfo {
 
 class CacheManager {
   init () {
-    if (config.debug) {
+    if (config.debug <= 2) {
       console.log('Cleared existing cache');
     }
     rimraf(config.cachedDir, () => {
@@ -21,13 +21,13 @@ class CacheManager {
 
   save (path : string, deviceName : string, content : string) {
     if (!fs.existsSync(this.getDevicePath(deviceName))) {
-      if (config.debug) {
+      if (config.debug <= 3) {
         console.log(`Creating Cache Device Directory [${ deviceName }]`);
       }
       fs.mkdirSync(this.getDevicePath(deviceName));
     }
 
-    if (config.debug) {
+    if (config.debug <= 2) {
       console.log('Writing Cache to file: ' + this.getPath(path, deviceName))
     }
     fs.writeFileSync(this.getPath(path, deviceName), JSON.stringify({
