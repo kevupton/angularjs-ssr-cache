@@ -1,8 +1,9 @@
 import { NavigationOptions } from 'puppeteer';
 import { BehaviorSubject, combineLatest, Observable, Subject, Subscription } from 'rxjs';
+import { of } from 'rxjs/internal/observable/of';
 import { filter } from 'rxjs/internal/operators/filter';
 import { tap } from 'rxjs/internal/operators/tap';
-import { debounceTime, delay, distinctUntilKeyChanged, flatMap, mapTo, switchMap } from 'rxjs/operators';
+import { catchError, debounceTime, delay, distinctUntilKeyChanged, flatMap, mapTo, switchMap } from 'rxjs/operators';
 import { Browser } from './browser';
 import { CachePathJob } from './cache-path-job';
 import { config } from './config';
@@ -150,6 +151,12 @@ export class QueueRenderer {
         }),
         flatMap(() => page.getContent()),
         tap(output => subject.next({ deviceName, output })),
+        catchError(e => {
+          if (config.logLevel >= 1) {
+            console.error(e);
+          }
+          return of(null);
+        }),
         mapTo(null),
       );
     }))
