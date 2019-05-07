@@ -1,6 +1,5 @@
 import { minify } from 'html-minifier';
-import { tap } from 'rxjs/internal/operators/tap';
-import { mapTo } from 'rxjs/operators';
+import { flatMap, mapTo } from 'rxjs/operators';
 import { cacheManager } from './cache-manager';
 import { config } from './config';
 import { logger } from './logger';
@@ -41,12 +40,12 @@ export class CachePathJob {
 
     return queueRenderer.addToQueue(this)
       .pipe(
-        tap(({ deviceName, output }) => {
+        flatMap(({ deviceName, output }) => {
           const tags : string[] = [`Device: ${ deviceName }`];
           const result          = this.minify(output, tags);
 
-          logger.debug('saving result');
-          cacheManager.save(this.path, deviceName, result, tags);
+          logger.debug('Sending to cache');
+          return cacheManager.save(this.path, deviceName, result, tags);
         }),
         mapTo(null),
       );
@@ -78,7 +77,7 @@ export class CachePathJob {
       return output;
     }
     catch (e) {
-      logger.error('Failed to Minify HTML', e.message.substr(0, 50));
+      logger.error('Failed to Minify HTML ' + e.message.substr(0, 50));
       return html;
     }
   }

@@ -1,6 +1,10 @@
 import fs from 'fs';
 import path from 'path';
 import rimraf from 'rimraf';
+import { Observable } from 'rxjs';
+import { of } from 'rxjs/internal/observable/of';
+import { tap } from 'rxjs/internal/operators/tap';
+import { flatMap, map, mapTo } from 'rxjs/operators';
 import { config } from './config';
 import { logger } from './logger';
 
@@ -23,30 +27,37 @@ class CacheManager {
     });
   }
 
-  save (path : string, deviceName : string, content : string, tags : string[] = []) {
-    if (!fs.existsSync(this.getDevicePath(deviceName))) {
-      logger.debug(`Creating Cache Device Directory [${ deviceName }]`);
-      fs.mkdirSync(this.getDevicePath(deviceName));
-    }
+  save (path : string, deviceName : string, content : string, tags : string[] = []) : Observable<void> {
+    return this.makeDirectoryIfNotExists(deviceName).pipe(
+      flatMap(() => {
+        const cachedAt = new Date();
+        tags.push(`Cached At: ${ cachedAt }`);
 
-    logger.debug('Writing Cache to file: ' + this.getPath(path, deviceName));
+        const cachedInfo : CachedFileInfo = {
+          path,
+          cachedAt: cachedAt.getTime(),
+          content: this.tag(content, tags),
+        };
 
-    const cachedAt = new Date();
-    tags.push(`Cached At: ${ cachedAt }`);
-
-    fs.writeFileSync(this.getPath(path, deviceName), JSON.stringify({
-      path,
-      cachedAt: cachedAt.getTime(),
-      content: this.tag(content, tags),
-    }));
+        logger.info('Writing Cache to file: ' + this.getPath(path, deviceName));
+        return this.writeFile(this.getPath(path, deviceName), JSON.stringify(cachedInfo));
+      }),
+      tap(() => logger.debug('Successfully Written')),
+      mapTo(undefined),
+    );
   }
 
-  read (path : string, deviceName : string) : undefined | CachedFileInfo {
-    if (!fs.existsSync(this.getPath(path, deviceName))) {
-      return;
-    }
+  read (path : string, deviceName : string) : Observable<undefined | CachedFileInfo> {
+    return this.checkExists(this.getPath(path, deviceName)).pipe(
+      flatMap(exists => {
+        if (!exists) {
+          return of(null);
+        }
 
-    return JSON.parse(fs.readFileSync(this.getPath(path, deviceName), 'utf-8'));
+        return this.readFile(this.getPath(path, deviceName));
+      }),
+      map(content => content ? JSON.parse(content) : undefined),
+    );
   }
 
   private tag (html : string, tags : string[]) {
@@ -58,6 +69,70 @@ class CacheManager {
     ].map(tag => `[ ${ tag } ]`).join('\n\t') }
   -->
 `;
+  }
+
+  private readFile (path : string) : Observable<string> {
+    return new Observable(subscriber => {
+      fs.readFile(path, 'utf-8', (err, content) => {
+        if (err) {
+          subscriber.error(err);
+          return;
+        }
+
+        subscriber.next(content);
+        subscriber.complete();
+      });
+    });
+  }
+
+  private writeFile (path : string, content : string) : Observable<void> {
+    return new Observable(subscriber => {
+      fs.writeFile(path, content, err => {
+        if (err) {
+          subscriber.error(err);
+          return;
+        }
+
+        subscriber.next();
+        subscriber.complete();
+      });
+    });
+  }
+
+  private checkExists (path : string) : Observable<boolean> {
+    return new Observable(subscriber => {
+      fs.stat(path, err => {
+        subscriber.next(!err);
+        subscriber.complete();
+      });
+    });
+  }
+
+  private makeDirectoryIfNotExists (path : string) {
+    return this.checkExists(this.getDevicePath(path)).pipe(
+      flatMap(exists => {
+        if (exists) {
+          return of(null);
+        }
+
+        logger.debug(`Creating Cache Device Directory [${ path }]`);
+        return this.makeDirectory(this.getDevicePath(path));
+      }),
+    );
+  }
+
+  private makeDirectory (path : string) : Observable<void> {
+    return new Observable(subscriber => {
+      fs.mkdir(path, err => {
+        if (err) {
+          subscriber.error(err);
+          return;
+        }
+
+        subscriber.next();
+        subscriber.complete();
+      });
+    });
   }
 
   private getPath (urlPath : string, deviceName : string) {

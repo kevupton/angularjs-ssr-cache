@@ -1,47 +1,72 @@
+import chalk from 'chalk';
 import { config } from './config';
 
-enum LogLevel {
-  Error = 1,
+export enum LogLevel {
+  All     = 0,
+  Error   = 1,
   Warning = 2,
-  Info = 3,
-  Debug = 4,
+  Info    = 3,
+  Debug   = 4,
 }
 
 class Logger {
-  error(...args : any[]) {
-    if (config.logLevel < LogLevel.Error) {
-      return;
-    }
 
-    console.error(...args);
+  private wasTickLast = false;
+
+  error (item : any) {
+    this.write(item, LogLevel.Error, '[ERROR]', '#c53932');
   }
 
-  warning(...args : any) {
-    if (config.logLevel < LogLevel.Warning) {
-      return;
-    }
-
-    console.warn(...args);
+  warning (item : any) {
+    this.write(item, LogLevel.Warning, '[WARNING]', '#d78738');
   }
 
-  info(...args : any) {
-    if (config.logLevel < LogLevel.Info) {
-      return;
-    }
-
-    console.info(...args);
+  info (item : any) {
+    this.write(item, LogLevel.Info, '[INFO]', '#dac66e');
   }
 
-  debug(...args : any) {
+  debug (item : any) {
+    this.write(item, LogLevel.Debug, '[DEBUG]', '#bababa');
+  }
+
+  log (item : any) {
+    this.write(item, LogLevel.All);
+  }
+
+  tick () {
     if (config.logLevel < LogLevel.Debug) {
       return;
     }
 
-    console.debug(...args);
+    const color = chalk.hex('#464646').dim;
+
+    this.wasTickLast = true;
+    process.stdout.write(color('.'));
   }
 
-  log(...args : any) {
-    console.log(...args);
+  private write (output : any, level : LogLevel, prefix = '', color : string = '#ffffff') {
+    if (config.logLevel < level) {
+      return;
+    }
+
+    if (typeof output !== 'string') {
+      output = JSON.stringify(output, undefined, 2);
+    }
+
+    this.checkTick();
+
+    // const prefixString = prefix ? chalk.bgHex(color).hex('#000000').bold(prefix) + ' ' : '';
+    const prefixString = prefix ? chalk.hex(color).dim(prefix) + ' ' : '';
+    const mainString = chalk.hex(color)(output);
+
+    process.stdout.write(prefixString + mainString + '\n');
+  }
+
+  private checkTick () {
+    if (this.wasTickLast) {
+      process.stdout.write('\n');
+    }
+    this.wasTickLast = false;
   }
 }
 

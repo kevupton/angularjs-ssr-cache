@@ -10,7 +10,7 @@
       "cacheDuration": 300
     }
   ],
-  "logLevel": 3,
+  "logLevel": 4,
   "headless": false,
   "devices": [
     {

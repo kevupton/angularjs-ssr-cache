@@ -4,6 +4,7 @@ import { flatMap, shareReplay } from 'rxjs/operators';
 import { cacheManager } from './cache-manager';
 import { CachePathJob } from './cache-path-job';
 import { config } from './config';
+import { logger } from './logger';
 
 export class Engine {
   private readonly interval = interval(1000 / config.loopSpeed);
@@ -36,9 +37,7 @@ export class Engine {
   );
 
   loop (timeDifference : number) : Observable<any> {
-    if (config.logLevel >= 3) {
-      process.stdout.write('.');
-    }
+    logger.tick();
 
     return combineLatest(
       this.cachedPaths.map(pathCache => pathCache.run(timeDifference) || of(null)),

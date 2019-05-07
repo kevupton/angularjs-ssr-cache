@@ -9,20 +9,22 @@ export const app = express();
 app.use(urlencoded({
   extended: true,
 }));
+
 app.use(json());
 
 app.get('*', (req : Request, res : Response) => {
   logger.debug(`REQUEST - ${ req.path }`);
-  res.json(parseInfo(
-    cacheManager.read(req.path, config.defaultDevice),
-  ));
+  cacheManager.read(req.path, config.defaultDevice).subscribe(content => {
+    res.json(parseInfo(content));
+  });
 });
 
 app.post('*', (req : Request, res : Response) => {
   logger.debug(`REQUEST - [${ req.body.deviceName }] : ${ req.path }`);
-  res.json(parseInfo(
-    cacheManager.read(req.path, req.body && req.body.deviceName || config.defaultDevice),
-  ));
+  const deviceName = req.body && req.body.deviceName || config.defaultDevice;
+  cacheManager.read(req.path, deviceName).subscribe(content => {
+    res.json(parseInfo(content));
+  });
 });
 
 function parseInfo (info? : CachedFileInfo) {
