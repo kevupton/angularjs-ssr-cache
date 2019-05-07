@@ -43,7 +43,7 @@ export class CachePathJob {
     return queueRenderer.addToQueue(this)
       .pipe(
         tap(({ deviceName, output }) => {
-          const result = this.tag(this.minify(output));
+          const result = this.tag(this.minify(output), deviceName);
           if (config.debug) {
             console.log('saving result');
           }
@@ -68,8 +68,8 @@ export class CachePathJob {
     return config.domain + this.path;
   }
 
-  private tag (html : string) {
-    return `${ html }<!-- [ AngularJS SSR Cache -- v${ config.version } ] -->`;
+  private tag (html : string, deviceName : string) {
+    return `${ html }<!-- [ AngularJS SSR Cache ] [ Version: v${ config.version } ] [ Device: ${ deviceName } ] [ Created At: ${ Date.now() } ] -->`;
   }
 
   private minify (html : string) {
