@@ -14,6 +14,9 @@ class Logger {
   private wasTickLast = false;
 
   error (item : any) {
+    if (item instanceof Error) {
+      item = `${ item }`;
+    }
     this.write(item, LogLevel.Error, '[ERROR]', '#c53932');
   }
 
@@ -57,11 +60,11 @@ class Logger {
 
     // const prefixString = prefix ? chalk.bgHex(color).hex('#000000').bold(prefix) + ' ' : '';
     const prefixColor = chalk.hex(color).dim;
-    const mainColor = chalk.hex(color);
+    const mainColor   = chalk.hex(color);
 
-    const tab = (prefix.length < 8 ? '\t' : ' ');
-    const time = new Date();
-    const timestamp = `${tab}[${ ('0' + time.getHours()).slice(-2) }:${ ('0' + time.getMinutes()).slice(-2) }]${tab}`;
+    const tab       = (prefix.length < 8 ? '\t' : ' ');
+    const time      = new Date();
+    const timestamp = `${ tab }[${ ('0' + time.getHours()).slice(-2) }:${ ('0' + time.getMinutes()).slice(-2) }]${ tab }`;
 
     process.stdout.write(prefixColor(prefix + timestamp) + mainColor(output) + '\n');
   }

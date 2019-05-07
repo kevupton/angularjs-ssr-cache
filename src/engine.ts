@@ -28,7 +28,9 @@ export class Engine {
         return this.loop(timeDifference);
       }),
     )
-      .subscribe();
+      .subscribe({
+        error: e => logger.error(e)
+      });
 
     subscriber.add(subscription);
     subscriber.next();

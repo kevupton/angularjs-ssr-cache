@@ -32,7 +32,10 @@ export class QueueRenderer {
     const existingSubject = this.cachedPathToSubject.get(cachedPath);
 
     if (existingSubject) {
-      return existingSubject.asObservable();
+      // just wait for this observable to complete
+      return existingSubject.asObservable().pipe(
+        filter(() => false),
+      );
     }
 
     const jobCompleteSubject = new Subject<DeviceOutput>();

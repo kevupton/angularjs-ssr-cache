@@ -1,13 +1,13 @@
 {
-  "domain": "https://www.google.com",
+  "domain": "http://localhost:3000",
   "cachedPaths": [
     {
       "path": "",
-      "cacheDuration": 300
+      "cacheDuration": 10
     },
     {
       "path": "/search?q=angularjs-ssr-cache",
-      "cacheDuration": 300
+      "cacheDuration": 10
     }
   ],
   "logLevel": 4,

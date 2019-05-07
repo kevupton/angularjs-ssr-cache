@@ -27,6 +27,9 @@ export class Browser {
     return combineLatest(config.devices.map(device => {
       return browser.openNewTab()
         .pipe(
+          flatMap(page => page.setHeaders({
+            'AngularJS-SSR-Cache': 'RequestingNew',
+          }).pipe(mapTo(page))),
           flatMap(page => {
             if (this.devicePageMap.has(device.name)) {
               throw new Error(`Device '${ device.name }' has already been registered`);
