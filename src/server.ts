@@ -1,7 +1,7 @@
+import { json, urlencoded } from 'body-parser';
 import express, { Request, Response } from 'express';
 import { CachedFileInfo, cacheManager } from './cache-manager';
 import { config } from './config';
-import { urlencoded, json } from 'body-parser';
 
 export const app = express();
 
@@ -17,6 +17,9 @@ app.get('*', (req : Request, res : Response) => {
 });
 
 app.post('*', (req : Request, res : Response) => {
+  if (config.debug) {
+    console.log(`Requesting device [${ req.body.deviceName }]`);
+  }
   res.json(parseInfo(
     cacheManager.read(req.path, req.body && req.body.deviceName || config.defaultDevice),
   ));
