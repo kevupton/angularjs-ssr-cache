@@ -2959,10 +2959,10 @@ he@^1.2.0:
   resolved "https://registry.yarnpkg.com/he/-/he-1.2.0.tgz#84ae65fa7eafb165fddb61566ae14baf05664f0f"
   integrity sha512-F/1DnUGPopORZi0ni+CvrCgHQ5FyEAHRLSApuYWMmrbSwoN2Mn/7k+Gl38gJnR7yyDZk6WLXwiGod1JOWNDKGw==
 
-headless-browser@0.0.3:
-  version "0.0.3"
-  resolved "https://registry.yarnpkg.com/headless-browser/-/headless-browser-0.0.3.tgz#dbb5f50295ff35afb4315e1fd6eccf4a056a27c8"
-  integrity sha512-BI2c8JMhu6+dJmzvodSpOfgUwdQqr0n2NYZ7vdmGtoepATXVjQABic6r4xYdwhDgbJqToVTf7nD0iVWEywoLyg==
+headless-browser@0.0.5:
+  version "0.0.5"
+  resolved "https://registry.yarnpkg.com/headless-browser/-/headless-browser-0.0.5.tgz#58acdbd6687795e13d6d43777733390ada0010b3"
+  integrity sha512-hPA8+MCnWKpDDgRZpwpAlsTb7CbUsMw4ZCwEryDcfL+k23hL06ZoWnj4wLPStJuGkQx5rPjdx6qp3kiHWT/Diw==
   dependencies:
     argparse "1.0.10"
     core-js "3"

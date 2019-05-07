@@ -22,6 +22,7 @@ export interface Config {
   afterDelayDuration : number;
   devices : DeviceConfig[];
   defaultDevice : string;
+  headless : boolean;
 }
 
 const DEFAULT_DEVICE_NAME = 'default';
@@ -36,6 +37,7 @@ const DEFAULT_CONFIG : Partial<Config> = {
   cachedDir: path.join(process.cwd(), './.cache'),
   afterDelayDuration: 0,
   minifyHtml: true,
+  headless: true,
   devices: [
     {
       name: DEFAULT_DEVICE_NAME,
@@ -79,4 +81,4 @@ Object.defineProperties(config, {
   }
 });
 
-updateEnvironment({ debug: config.debug });
+updateEnvironment({ debug: config.debug, headless: config.headless });

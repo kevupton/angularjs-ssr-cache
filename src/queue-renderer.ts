@@ -1,3 +1,4 @@
+import { NavigationOptions } from 'puppeteer';
 import { BehaviorSubject, combineLatest, Observable, Subject, Subscription } from 'rxjs';
 import { filter } from 'rxjs/internal/operators/filter';
 import { tap } from 'rxjs/internal/operators/tap';
@@ -130,24 +131,27 @@ export class QueueRenderer {
     return concatComplete(job.devices.map(deviceName => {
       const page = browser.getDevicePage(deviceName);
 
-      return page.getUrl()
-        .pipe(
-          flatMap((previousUrl) => {
-            if (url === previousUrl && config.debug) {
-              console.log('Refreshing Page.');
+      return page.bringToFront().pipe(
+        flatMap(() => page.getUrl()),
+        flatMap((previousUrl) => {
+          const options : NavigationOptions = {
+            waitUntil: 'networkidle0',
+            timeout: 120000,
+          };
+
+          if (url === previousUrl) {
+            if (config.debug) {
+              console.log('Refreshing Page ...');
             }
-            return combineLatest([
-              url === previousUrl ? page.refresh() : page.open(url),
-              page.awaitPageLoad()
-                .pipe(
-                  delay(config.afterDelayDuration),
-                ),
-            ]);
-          }),
-          flatMap(() => page.getContent()),
-          tap(output => subject.next({ deviceName, output })),
-          mapTo(null),
-        );
+            return page.refresh(options);
+          }
+
+          return page.open(url, options).pipe(delay(config.afterDelayDuration));
+        }),
+        flatMap(() => page.getContent()),
+        tap(output => subject.next({ deviceName, output })),
+        mapTo(null),
+      );
     }))
       .pipe(
         tap(() => {

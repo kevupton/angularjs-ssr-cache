@@ -18,7 +18,7 @@
     "body-parser": "^1.19.0",
     "core-js": "3",
     "express": "^4.16.4",
-    "headless-browser": "0.0.3",
+    "headless-browser": "0.0.5",
     "html-minifier": "^4.0.0",
     "rxjs": "^6.5.1"
   },
