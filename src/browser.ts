@@ -5,6 +5,7 @@ import { combineLatest } from 'rxjs';
 import { tap } from 'rxjs/internal/operators/tap';
 import { flatMap, mapTo, shareReplay } from 'rxjs/operators';
 import { config } from './config';
+import { logger } from './logger';
 
 export interface DeviceConfig extends IEmulateOptions {
   name : string;
@@ -36,9 +37,7 @@ export class Browser {
               .pipe(
                 mapTo(page),
                 tap(() => {
-                  if (config.logLevel >= 3) {
-                    console.log('Registered device with name: [' + device.name + ']');
-                  }
+                  logger.debug('Registered device with name: [' + device.name + ']');
                 }),
               );
           }),

@@ -8,6 +8,7 @@ import { Browser } from './browser';
 import { CachePathJob } from './cache-path-job';
 import { config } from './config';
 import { concatComplete } from './lib/concat-complete';
+import { logger } from './logger';
 
 export interface BrowserContainer {
   job : CachePathJob | null;
@@ -102,9 +103,7 @@ export class QueueRenderer {
       return;
     }
 
-    if (config.logLevel >= 3) {
-      console.log('registering job');
-    }
+    logger.debug('registering job');
 
     this.queueSubject.next(queue);
     this.containerSubjects[index].next({
@@ -114,9 +113,7 @@ export class QueueRenderer {
   }
 
   private handleJob ({ job, browser } : BrowserContainer, containerSubject : BehaviorSubject<BrowserContainer>) {
-    if (config.logLevel >= 3) {
-      console.log('handling job');
-    }
+    logger.debug('handling job');
 
     if (!job) {
       throw new Error('Expected job to be defined, in handling of job');
@@ -141,9 +138,7 @@ export class QueueRenderer {
           };
 
           if (url === previousUrl) {
-            if (config.logLevel >= 3) {
-              console.log('Refreshing Page ...');
-            }
+            logger.debug('Refreshing Page ...');
             return page.refresh(options);
           }
 
@@ -152,9 +147,7 @@ export class QueueRenderer {
         flatMap(() => page.getContent()),
         tap(output => subject.next({ deviceName, output })),
         catchError(e => {
-          if (config.logLevel >= 1) {
-            console.error(e);
-          }
+          logger.error(e);
           return of(null);
         }),
         mapTo(null),

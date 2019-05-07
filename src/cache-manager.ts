@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import rimraf from 'rimraf';
 import { config } from './config';
+import { logger } from './logger';
 
 export interface CachedFileInfo {
   path : string;
@@ -16,9 +17,7 @@ class CacheManager {
   ];
 
   init () {
-    if (config.logLevel >= 3) {
-      console.log('Cleared existing cache');
-    }
+    logger.debug('Cleared existing cache');
     rimraf(config.cachedDir, () => {
       fs.mkdirSync(config.cachedDir);
     });
@@ -26,15 +25,11 @@ class CacheManager {
 
   save (path : string, deviceName : string, content : string, tags : string[] = []) {
     if (!fs.existsSync(this.getDevicePath(deviceName))) {
-      if (config.logLevel >= 3) {
-        console.log(`Creating Cache Device Directory [${ deviceName }]`);
-      }
+      logger.debug(`Creating Cache Device Directory [${ deviceName }]`);
       fs.mkdirSync(this.getDevicePath(deviceName));
     }
 
-    if (config.logLevel >= 3) {
-      console.log('Writing Cache to file: ' + this.getPath(path, deviceName));
-    }
+    logger.debug('Writing Cache to file: ' + this.getPath(path, deviceName));
 
     const cachedAt = new Date();
     tags.push(`Cached At: ${ cachedAt }`);

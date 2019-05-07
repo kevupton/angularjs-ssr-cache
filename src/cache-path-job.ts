@@ -3,6 +3,7 @@ import { tap } from 'rxjs/internal/operators/tap';
 import { mapTo } from 'rxjs/operators';
 import { cacheManager } from './cache-manager';
 import { config } from './config';
+import { logger } from './logger';
 import { queueRenderer } from './queue-renderer';
 
 export interface CachedPathConfig {
@@ -36,9 +37,7 @@ export class CachePathJob {
       return;
     }
 
-    if (config.logLevel >= 3) {
-      console.log('adding to queue ' + this.getUrl());
-    }
+    logger.debug('adding to queue ' + this.getUrl());
 
     return queueRenderer.addToQueue(this)
       .pipe(
@@ -46,9 +45,7 @@ export class CachePathJob {
           const tags : string[] = [`Device: ${ deviceName }`];
           const result          = this.minify(output, tags);
 
-          if (config.logLevel >= 3) {
-            console.log('saving result');
-          }
+          logger.debug('saving result');
           cacheManager.save(this.path, deviceName, result, tags);
         }),
         mapTo(null),
@@ -81,7 +78,7 @@ export class CachePathJob {
       return output;
     }
     catch (e) {
-      console.log('Failed to Minify HTML', e.message.substr(0, 50));
+      logger.error('Failed to Minify HTML', e.message.substr(0, 50));
       return html;
     }
   }

@@ -4,6 +4,7 @@ import path from 'path';
 import { updateEnvironment } from 'headless-browser';
 import { DeviceConfig } from './browser';
 import { CachedPathConfig } from './cache-path-job';
+import { logger } from './logger';
 import packageJson from './package.json';
 
 export interface Config {
@@ -57,7 +58,7 @@ const DEFAULT_CONFIG : Partial<Config> = {
 const configJsonPath = path.join(process.cwd(), './config.json');
 
 if (!fs.existsSync(configJsonPath)) {
-  console.log('[ERROR] Cannot find `config.json` file.');
+  logger.log('[ERROR] Cannot find `config.json` file.');
   process.exit(0);
 }
 
