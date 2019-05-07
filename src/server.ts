@@ -18,7 +18,7 @@ app.get('*', (req : Request, res : Response) => {
 
 app.post('*', (req : Request, res : Response) => {
   if (config.debug) {
-    console.log(`Requesting device [${ req.body.deviceName }]`);
+    console.log(`REQUEST - [${ req.body.deviceName }] : ${req.path}`);
   }
   res.json(parseInfo(
     cacheManager.read(req.path, req.body && req.body.deviceName || config.defaultDevice),
