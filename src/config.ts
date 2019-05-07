@@ -36,7 +36,6 @@ const DEFAULT_CONFIG : Partial<Config> = {
   cachedDir: path.join(process.cwd(), './.cache'),
   afterDelayDuration: 0,
   minifyHtml: true,
-  defaultDevice: DEFAULT_DEVICE_NAME,
   devices: [
     {
       name: DEFAULT_DEVICE_NAME,
@@ -72,6 +71,11 @@ Object.defineProperties(config, {
     get () {
       return packageJson.version;
     }
+  },
+  defaultDevice: {
+    configurable: true,
+    writable: true,
+    value: config.devices[0] && config.devices[0].name || DEFAULT_DEVICE_NAME,
   }
 });
 
