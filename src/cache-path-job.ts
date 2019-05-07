@@ -69,7 +69,8 @@ export class CachePathJob {
   }
 
   private tag (html : string, deviceName : string) {
-    return `${ html }<!-- [ AngularJS SSR Cache ] [ Version: v${ config.version } ] [ Device: ${ deviceName } ] [ Created At: ${ Date.now() } ] -->`;
+    return `${ html }
+<!-- [ AngularJS SSR Cache ] [ Version: v${ config.version } ] [ Device: ${ deviceName } ] [ Created At: ${ Date.now() } ] -->`;
   }
 
   private minify (html : string) {
@@ -78,7 +79,8 @@ export class CachePathJob {
     }
 
     try {
-      return `${ minify(html, config.htmlMinifierConfig) }<!-- Minified By AngularJS SSR Cache -->`;
+      return `${ minify(html, config.htmlMinifierConfig) }
+<!-- Minified By AngularJS SSR Cache -->`;
     }
     catch (e) {
       console.log('Failed to Minify HTML', e.message.substr(0, 50));
