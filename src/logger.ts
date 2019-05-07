@@ -56,10 +56,14 @@ class Logger {
     this.checkTick();
 
     // const prefixString = prefix ? chalk.bgHex(color).hex('#000000').bold(prefix) + ' ' : '';
-    const prefixString = prefix ? chalk.hex(color).dim(prefix) + ' ' : '';
-    const mainString = chalk.hex(color)(output);
+    const prefixColor = chalk.hex(color).dim;
+    const mainColor = chalk.hex(color);
 
-    process.stdout.write(prefixString + mainString + '\n');
+    const tab = (prefix.length < 8 ? '\t' : ' ');
+    const time = new Date();
+    const timestamp = `${tab}[${ ('0' + time.getHours()).slice(-2) }:${ ('0' + time.getMinutes()).slice(-2) }]${tab}`;
+
+    process.stdout.write(prefixColor(prefix + timestamp) + mainColor(output) + '\n');
   }
 
   private checkTick () {
