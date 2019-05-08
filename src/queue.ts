@@ -1,7 +1,7 @@
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { filter } from 'rxjs/internal/operators/filter';
 import { tap } from 'rxjs/internal/operators/tap';
-import { debounceTime, flatMap, map } from 'rxjs/operators';
+import { delay, flatMap, map } from 'rxjs/operators';
 
 export interface QueueItem<T = any> {
   obs$ : Observable<T>;
@@ -36,7 +36,7 @@ export class Queue {
     return this.queueSubject.pipe(
       filter(queue => queue.length > 0 && this.running < this.maxRunning),
       tap(() => this.running++),
-      debounceTime(0),
+      delay(0),
       map(() => this.queueSubject.value),
       map(([item, ...remaining]) => {
         this.queueSubject.next(remaining);

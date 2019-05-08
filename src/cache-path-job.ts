@@ -3,7 +3,7 @@ import { flatMap, mapTo } from 'rxjs/operators';
 import { cacheManager } from './cache-manager';
 import { config } from './config';
 import { logger } from './logger';
-import { renderer } from './renderer';
+import { DeviceOutput, renderer } from './renderer';
 
 export interface CachedPathConfig {
   path : string;
@@ -40,12 +40,9 @@ export class CachePathJob {
 
     return renderer.render(this)
       .pipe(
-        flatMap(({ deviceName, output }) => {
-          const tags : string[] = [`Device: ${ deviceName }`];
-          const result          = this.minify(output, tags);
-
+        flatMap((deviceOutput) => {
           logger.debug('Sending to cache');
-          return cacheManager.save(this.path, deviceName, result, tags);
+          return cacheManager.save(this.path, this.minify(deviceOutput));
         }),
         mapTo(null),
       );
@@ -66,19 +63,21 @@ export class CachePathJob {
     return config.domain + this.path;
   }
 
-  private minify (html : string, tags : string[]) {
+  private minify (deviceOutput : DeviceOutput) : DeviceOutput {
     if (!config.minifyHtml) {
-      return html;
+      return deviceOutput;
     }
 
     try {
-      const output = minify(html, config.htmlMinifierConfig);
-      tags.push('Minified');
-      return output;
+      return {
+        ...deviceOutput,
+        content: minify(deviceOutput.content, config.htmlMinifierConfig),
+        tags: [ ...deviceOutput.tags, 'Minified' ]
+      }
     }
     catch (e) {
       logger.error('Failed to Minify HTML ' + e.message.substr(0, 50));
-      return html;
+      return deviceOutput;
     }
   }
 }

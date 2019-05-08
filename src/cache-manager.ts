@@ -8,11 +8,11 @@ import { flatMap, map, mapTo } from 'rxjs/operators';
 import { config } from './config';
 import { logger } from './logger';
 import { Queue } from './queue';
+import { DeviceOutput } from './renderer';
 
-export interface CachedFileInfo {
+export interface CachedFileInfo extends DeviceOutput {
   path : string;
   cachedAt : number;
-  content : string;
 }
 
 class CacheManager {
@@ -30,13 +30,16 @@ class CacheManager {
     });
   }
 
-  save (path : string, deviceName : string, content : string, tags : string[] = []) : Observable<void> {
+  save (path : string, deviceOutput : DeviceOutput) : Observable<void> {
+    const { tags, deviceName, content } = deviceOutput;
     return this.makeDirectoryIfNotExists(deviceName).pipe(
       flatMap(() => {
         const cachedAt = new Date();
+
         tags.push(`Cached At: ${ cachedAt }`);
 
         const cachedInfo : CachedFileInfo = {
+          ...deviceOutput,
           path,
           cachedAt: cachedAt.getTime(),
           content: this.tag(content, tags),

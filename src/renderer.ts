@@ -23,8 +23,8 @@ import { logger } from './logger';
 import { Queue } from './queue';
 
 interface Job {
-  ref : CachePathJob;
-  result : Subject<DeviceOutput>;
+  readonly ref : CachePathJob;
+  readonly result : Subject<DeviceOutput>;
 }
 
 export interface BrowserContainer {
@@ -34,7 +34,9 @@ export interface BrowserContainer {
 
 export interface DeviceOutput {
   readonly deviceName : string;
-  readonly output : string;
+  readonly content : string;
+  readonly headers : Record<string, string>;
+  readonly tags : string[];
 }
 
 export class Renderer {
@@ -119,7 +121,7 @@ export class Renderer {
 
       return page.bringToFront().pipe(
         flatMap(() => page.getUrl()),
-        flatMap((previousUrl) => {
+        map(previousUrl => {
           const options : NavigationOptions = {
             waitUntil: 'networkidle0',
             timeout: 120000,
@@ -132,8 +134,23 @@ export class Renderer {
 
           return page.open(url, options).pipe(delay(config.afterDelayDuration));
         }),
-        flatMap(() => page.getContent()),
-        tap(output => result.next({ deviceName, output })),
+        flatMap(request$ => combineLatest([
+          request$,
+          page.on$('response').pipe(
+            map(([response]) => response),
+            filter((response) => response.url() === url),
+            first(),
+          ),
+        ])),
+        flatMap(([, response]) => page.getContent().pipe(
+          map(content => ({ content, response })),
+        )),
+        tap(({ content, response }) => result.next({
+          deviceName,
+          content,
+          headers: response.headers(),
+          tags: [`Device: ${ deviceName }`],
+        })),
         catchError(e => {
           logger.error(e);
           return of(null);
