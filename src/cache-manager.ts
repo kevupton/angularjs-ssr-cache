@@ -7,6 +7,7 @@ import { tap } from 'rxjs/internal/operators/tap';
 import { flatMap, map, mapTo } from 'rxjs/operators';
 import { config } from './config';
 import { logger } from './logger';
+import { Queue } from './queue';
 
 export interface CachedFileInfo {
   path : string;
@@ -19,6 +20,8 @@ class CacheManager {
     'AngularJS SSR Cache',
     `Version: v${ config.version }`,
   ];
+
+  private readonly queue = new Queue();
 
   init () {
     logger.debug('Cleared existing cache');
@@ -109,15 +112,18 @@ class CacheManager {
   }
 
   private makeDirectoryIfNotExists (path : string) {
-    return this.checkExists(this.getDevicePath(path)).pipe(
-      flatMap(exists => {
-        if (exists) {
-          return of(null);
-        }
+    // only do directory checking on at a time.
+    return this.queue.addToQueue(
+      this.checkExists(this.getDevicePath(path)).pipe(
+        flatMap(exists => {
+          if (exists) {
+            return of(null);
+          }
 
-        logger.debug(`Creating Cache Device Directory [${ path }]`);
-        return this.makeDirectory(this.getDevicePath(path));
-      }),
+          logger.debug(`Creating Cache Device Directory [${ path }]`);
+          return this.makeDirectory(this.getDevicePath(path));
+        }),
+      )
     );
   }
 
