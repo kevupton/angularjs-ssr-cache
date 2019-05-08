@@ -3,7 +3,7 @@ import { flatMap, mapTo } from 'rxjs/operators';
 import { cacheManager } from './cache-manager';
 import { config } from './config';
 import { logger } from './logger';
-import { queueRenderer } from './queue-renderer';
+import { renderer } from './renderer';
 
 export interface CachedPathConfig {
   path : string;
@@ -38,7 +38,7 @@ export class CachePathJob {
 
     logger.debug('adding to queue ' + this.getUrl());
 
-    return queueRenderer.addToQueue(this)
+    return renderer.render(this)
       .pipe(
         flatMap(({ deviceName, output }) => {
           const tags : string[] = [`Device: ${ deviceName }`];

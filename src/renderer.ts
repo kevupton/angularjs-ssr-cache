@@ -37,7 +37,7 @@ export interface DeviceOutput {
   readonly output : string;
 }
 
-export class QueueRenderer {
+export class Renderer {
 
   private readonly containerSubjects = this.registerContainers();
   private readonly queue             = new Queue(config.totalBrowsers);
@@ -53,7 +53,7 @@ export class QueueRenderer {
     shareReplay(1),
   );
 
-  addToQueue (job : CachePathJob) : Observable<DeviceOutput> {
+  render (job : CachePathJob) : Observable<DeviceOutput> {
     return this.queue.addToQueue(
       this.setup$.pipe(flatMap(() => this.mainTask(job))),
     );
@@ -147,4 +147,4 @@ export class QueueRenderer {
   }
 }
 
-export const queueRenderer = new QueueRenderer();
+export const renderer = new Renderer();
