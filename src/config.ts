@@ -10,7 +10,7 @@ import packageJson from './package.json';
 export interface Config {
   port : number;
   host : string;
-  loopSpeed : number;
+  ticksPerSecond : number;
   domain : string;
   cachedPaths : CachedPathConfig[];
   cachedDir : string;
@@ -32,7 +32,7 @@ const DEFAULT_CONFIG : Partial<Config> = {
   port: 1002,
   host: '127.0.0.1',
   logLevel: 0,
-  loopSpeed: 20,
+  ticksPerSecond: 20,
   globalCacheDuration: 600,
   totalBrowsers: 2,
   cachedDir: path.join(process.cwd(), './.cache'),
